@@ -22,6 +22,11 @@
 
 # Usage library
 
+#### Import
+```
+import "github.com/adaydesign/go-decrypt-pdf/lib"
+```
+
 #### PDFCPU
 ```
 input := "files/locked_doc.pdf"
