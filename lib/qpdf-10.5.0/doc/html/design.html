@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Design and Library Notes &mdash; QPDF 10.5.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Linearization" href="linearization.html" />
+    <link rel="prev" title="QPDF JSON" href="json.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> QPDF
+            <img src="_static/qpdf.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                10.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">What is QPDF?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="download.html">Downloading QPDF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Building and Installing QPDF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packaging.html">Notes for Packagers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Running QPDF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qdf.html">QDF Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library.html">Using the QPDF Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weak-crypto.html">Weak Cryptography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="json.html">QPDF JSON</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Design and Library Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#design-goals">Design Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#helper-classes">Helper Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation-notes">Implementation Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#casting-policy">Casting Policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#encryption">Encryption</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#random-number-generation">Random Number Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-and-removing-pages">Adding and Removing Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reserving-object-numbers">Reserving Object Numbers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#copying-objects-from-other-pdf-files">Copying Objects From Other PDF Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#writing-pdf-files">Writing PDF Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#filtered-streams">Filtered Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#object-accessor-methods">Object Accessor Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="linearization.html">Linearization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="object-streams.html">Object and Cross-Reference Streams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgement.html">Acknowledgments</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QPDF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Design and Library Notes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/design.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="design-and-library-notes">
+<span id="design"></span><h1>Design and Library Notes<a class="headerlink" href="#design-and-library-notes" title="Permalink to this headline"></a></h1>
+<section id="introduction">
+<span id="design-intro"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
+<p>This section was written prior to the implementation of the qpdf package
+and was subsequently modified to reflect the implementation. In some
+cases, for purposes of explanation, it may differ slightly from the
+actual implementation. As always, the source code and test suite are
+authoritative. Even if there are some errors, this document should serve
+as a road map to understanding how this code works.</p>
+<p>In general, one should adhere strictly to a specification when writing
+but be liberal in reading. This way, the product of our software will be
+accepted by the widest range of other programs, and we will accept the
+widest range of input files. This library attempts to conform to that
+philosophy whenever possible but also aims to provide strict checking
+for people who want to validate PDF files. If you don’t want to see
+warnings and are trying to write something that is tolerant, you can
+call <code class="docutils literal notranslate"><span class="pre">setSuppressWarnings(true)</span></code>. If you want to fail on the first
+error, you can call <code class="docutils literal notranslate"><span class="pre">setAttemptRecovery(false)</span></code>. The default behavior
+is to generating warnings for recoverable problems. Note that recovery
+will not always produce the desired results even if it is able to get
+through the file. Unlike most other PDF files that produce generic
+warnings such as “This file is damaged,”, qpdf generally issues a
+detailed error message that would be most useful to a PDF developer.
+This is by design as there seems to be a shortage of PDF validation
+tools out there. This was, in fact, one of the major motivations behind
+the initial creation of qpdf.</p>
+</section>
+<section id="design-goals">
+<span id="id1"></span><h2>Design Goals<a class="headerlink" href="#design-goals" title="Permalink to this headline"></a></h2>
+<p>The QPDF package includes support for reading and rewriting PDF files.
+It aims to hide from the user details involving object locations,
+modified (appended) PDF files, the directness/indirectness of objects,
+and stream filters including encryption. It does not aim to hide
+knowledge of the object hierarchy or content stream contents. Put
+another way, a user of the qpdf library is expected to have knowledge
+about how PDF files work, but is not expected to have to keep track of
+bookkeeping details such as file positions.</p>
+<p>A user of the library never has to care whether an object is direct or
+indirect, though it is possible to determine whether an object is direct
+or not if this information is needed. All access to objects deals with
+this transparently. All memory management details are also handled by
+the library.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">PointerHolder</span></code> object is used internally by the library to deal
+with memory management. This is basically a smart pointer object very
+similar in spirit to C++-11’s <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> object, but predating
+it by several years. This library also makes use of a technique for
+giving fine-grained access to methods in one class to other classes by
+using public subclasses with friends and only private members that in
+turn call private methods of the containing class. See
+<code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle::Factory</span></code> as an example.</p>
+<p>The top-level qpdf class is <code class="docutils literal notranslate"><span class="pre">QPDF</span></code>. A <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object represents a PDF
+file. The library provides methods for both accessing and mutating PDF
+files.</p>
+<p>The primary class for interacting with PDF objects is
+<code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code>. Instances of this class can be passed around by
+value, copied, stored in containers, etc. with very low overhead.
+Instances of <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> created by reading from a file will
+always contain a reference back to the <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object from which they
+were created. A <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> may be direct or indirect. If
+indirect, the <code class="docutils literal notranslate"><span class="pre">QPDFObject</span></code> the <code class="docutils literal notranslate"><span class="pre">PointerHolder</span></code> initially points to
+is a null pointer. In this case, the first attempt to access the
+underlying <code class="docutils literal notranslate"><span class="pre">QPDFObject</span></code> will result in the <code class="docutils literal notranslate"><span class="pre">QPDFObject</span></code> being
+resolved via a call to the referenced <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> instance. This makes it
+essentially impossible to make coding errors in which certain things
+will work for some PDF files and not for others based on which objects
+are direct and which objects are indirect.</p>
+<p>Instances of <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> can be directly created and modified
+using static factory methods in the <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> class. There
+are factory methods for each type of object as well as a convenience
+method <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle::parse</span></code> that creates an object from a string
+representation of the object. Existing instances of <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code>
+can also be modified in several ways. See comments in
+<code class="file docutils literal notranslate"><span class="pre">QPDFObjectHandle.hh</span></code> for details.</p>
+<p>An instance of <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> is constructed by using the class’s default
+constructor. If desired, the <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object may be configured with
+various methods that change its default behavior. Then the
+<code class="docutils literal notranslate"><span class="pre">QPDF::processFile()</span></code> method is passed the name of a PDF file, which
+permanently associates the file with that QPDF object. A password may
+also be given for access to password-protected files. QPDF does not
+enforce encryption parameters and will treat user and owner passwords
+equivalently. Either password may be used to access an encrypted file.
+<code class="docutils literal notranslate"><span class="pre">QPDF</span></code> will allow recovery of a user password given an owner password.
+The input PDF file must be seekable. (Output files written by
+<code class="docutils literal notranslate"><span class="pre">QPDFWriter</span></code> need not be seekable, even when creating linearized
+files.) During construction, <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> validates the PDF file’s header,
+and then reads the cross reference tables and trailer dictionaries. The
+<code class="docutils literal notranslate"><span class="pre">QPDF</span></code> class keeps only the first trailer dictionary though it does
+read all of them so it can check the <code class="docutils literal notranslate"><span class="pre">/Prev</span></code> key. <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> class users
+may request the root object and the trailer dictionary specifically. The
+cross reference table is kept private. Objects may then be requested by
+number of by walking the object tree.</p>
+<p>When a PDF file has a cross-reference stream instead of a
+cross-reference table and trailer, requesting the document’s trailer
+dictionary returns the stream dictionary from the cross-reference stream
+instead.</p>
+<p>There are some convenience routines for very common operations such as
+walking the page tree and returning a vector of all page objects. For
+full details, please see the header files
+<code class="file docutils literal notranslate"><span class="pre">QPDF.hh</span></code> and
+<code class="file docutils literal notranslate"><span class="pre">QPDFObjectHandle.hh</span></code>. There are also some
+additional helper classes that provide higher level API functions for
+certain document constructions. These are discussed in <a class="reference internal" href="#helper-classes"><span class="std std-ref">Helper Classes</span></a>.</p>
+</section>
+<section id="helper-classes">
+<span id="id2"></span><h2>Helper Classes<a class="headerlink" href="#helper-classes" title="Permalink to this headline"></a></h2>
+<p>QPDF version 8.1 introduced the concept of helper classes. Helper
+classes are intended to contain higher level APIs that allow developers
+to work with certain document constructs at an abstraction level above
+that of <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> while staying true to qpdf’s philosophy of
+not hiding document structure from the developer. As with qpdf in
+general, the goal is take away some of the more tedious bookkeeping
+aspects of working with PDF files, not to remove the need for the
+developer to understand how the PDF construction in question works. The
+driving factor behind the creation of helper classes was to allow the
+evolution of higher level interfaces in qpdf without polluting the
+interfaces of the main top-level classes <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> and
+<code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code>.</p>
+<p>There are two kinds of helper classes: <em>document</em> helpers and <em>object</em>
+helpers. Document helpers are constructed with a reference to a <code class="docutils literal notranslate"><span class="pre">QPDF</span></code>
+object and provide methods for working with structures that are at the
+document level. Object helpers are constructed with an instance of a
+<code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> and provide methods for working with specific types
+of objects.</p>
+<p>Examples of document helpers include <code class="docutils literal notranslate"><span class="pre">QPDFPageDocumentHelper</span></code>, which
+contains methods for operating on the document’s page trees, such as
+enumerating all pages of a document and adding and removing pages; and
+<code class="docutils literal notranslate"><span class="pre">QPDFAcroFormDocumentHelper</span></code>, which contains document-level methods
+related to interactive forms, such as enumerating form fields and
+creating mappings between form fields and annotations.</p>
+<p>Examples of object helpers include <code class="docutils literal notranslate"><span class="pre">QPDFPageObjectHelper</span></code> for
+performing operations on pages such as page rotation and some operations
+on content streams, <code class="docutils literal notranslate"><span class="pre">QPDFFormFieldObjectHelper</span></code> for performing
+operations related to interactive form fields, and
+<code class="docutils literal notranslate"><span class="pre">QPDFAnnotationObjectHelper</span></code> for working with annotations.</p>
+<p>It is always possible to retrieve the underlying <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> reference from
+a document helper and the underlying <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> reference from
+an object helper. Helpers are designed to be helpers, not wrappers. The
+intention is that, in general, it is safe to freely intermix operations
+that use helpers with operations that use the underlying objects.
+Document and object helpers do not attempt to provide a complete
+interface for working with the things they are helping with, nor do they
+attempt to encapsulate underlying structures. They just provide a few
+methods to help with error-prone, repetitive, or complex tasks. In some
+cases, a helper object may cache some information that is expensive to
+gather. In such cases, the helper classes are implemented so that their
+own methods keep the cache consistent, and the header file will provide
+a method to invalidate the cache and a description of what kinds of
+operations would make the cache invalid. If in doubt, you can always
+discard a helper class and create a new one with the same underlying
+objects, which will ensure that you have discarded any stale
+information.</p>
+<p>By Convention, document helpers are called
+<code class="docutils literal notranslate"><span class="pre">QPDFSomethingDocumentHelper</span></code> and are derived from
+<code class="docutils literal notranslate"><span class="pre">QPDFDocumentHelper</span></code>, and object helpers are called
+<code class="docutils literal notranslate"><span class="pre">QPDFSomethingObjectHelper</span></code> and are derived from <code class="docutils literal notranslate"><span class="pre">QPDFObjectHelper</span></code>.
+For details on specific helpers, please see their header files. You can
+find them by looking at
+<code class="file docutils literal notranslate"><span class="pre">include/qpdf/QPDF*DocumentHelper.hh</span></code> and
+<code class="file docutils literal notranslate"><span class="pre">include/qpdf/QPDF*ObjectHelper.hh</span></code>.</p>
+<p>In order to avoid creation of circular dependencies, the following
+general guidelines are followed with helper classes:</p>
+<ul class="simple">
+<li><p>Core class interfaces do not know about helper classes. For example,
+no methods of <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> or <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> will include helper
+classes in their interfaces.</p></li>
+<li><p>Interfaces of object helpers will usually not use document helpers in
+their interfaces. This is because it is much more useful for document
+helpers to have methods that return object helpers. Most operations
+in PDF files start at the document level and go from there to the
+object level rather than the other way around. It can sometimes be
+useful to map back from object-level structures to document-level
+structures. If there is a desire to do this, it will generally be
+provided by a method in the document helper class.</p></li>
+<li><p>Most of the time, object helpers don’t know about other object
+helpers. However, in some cases, one type of object may be a
+container for another type of object, in which case it may make sense
+for the outer object to know about the inner object. For example,
+there are methods in the <code class="docutils literal notranslate"><span class="pre">QPDFPageObjectHelper</span></code> that know
+<code class="docutils literal notranslate"><span class="pre">QPDFAnnotationObjectHelper</span></code> because references to annotations are
+contained in page dictionaries.</p></li>
+<li><p>Any helper or core library class may use helpers in their
+implementations.</p></li>
+</ul>
+<p>Prior to qpdf version 8.1, higher level interfaces were added as
+“convenience functions” in either <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> or <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code>. For
+compatibility, older convenience functions for operating with pages will
+remain in those classes even as alternatives are provided in helper
+classes. Going forward, new higher level interfaces will be provided
+using helper classes.</p>
+</section>
+<section id="implementation-notes">
+<span id="id3"></span><h2>Implementation Notes<a class="headerlink" href="#implementation-notes" title="Permalink to this headline"></a></h2>
+<p>This section contains a few notes about QPDF’s internal implementation,
+particularly around what it does when it first processes a file. This
+section is a bit of a simplification of what it actually does, but it
+could serve as a starting point to someone trying to understand the
+implementation. There is nothing in this section that you need to know
+to use the qpdf library.</p>
+<p><code class="docutils literal notranslate"><span class="pre">QPDFObject</span></code> is the basic PDF Object class. It is an abstract base
+class from which are derived classes for each type of PDF object.
+Clients do not interact with Objects directly but instead interact with
+<code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code>.</p>
+<p>When the <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> class creates a new object, it dynamically allocates
+the appropriate type of <code class="docutils literal notranslate"><span class="pre">QPDFObject</span></code> and immediately hands the pointer
+to an instance of <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code>. The parser reads a token from
+the current file position. If the token is a not either a dictionary or
+array opener, an object is immediately constructed from the single token
+and the parser returns. Otherwise, the parser iterates in a special mode
+in which it accumulates objects until it finds a balancing closer.
+During this process, the “<code class="docutils literal notranslate"><span class="pre">R</span></code>” keyword is recognized and an indirect
+<code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> may be constructed.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">QPDF::resolve()</span></code> method, which is used to resolve an indirect
+object, may be invoked from the <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> class. It first
+checks a cache to see whether this object has already been read. If not,
+it reads the object from the PDF file and caches it. It the returns the
+resulting <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code>. The calling object handle then replaces
+its <code class="docutils literal notranslate"><span class="pre">PointerHolder&lt;QDFObject&gt;</span></code> with the one from the newly returned
+<code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code>. In this way, only a single copy of any direct
+object need exist and clients can access objects transparently without
+knowing caring whether they are direct or indirect objects.
+Additionally, no object is ever read from the file more than once. That
+means that only the portions of the PDF file that are actually needed
+are ever read from the input file, thus allowing the qpdf package to
+take advantage of this important design goal of PDF files.</p>
+<p>If the requested object is inside of an object stream, the object stream
+itself is first read into memory. Then the tokenizer reads objects from
+the memory stream based on the offset information stored in the stream.
+Those individual objects are cached, after which the temporary buffer
+holding the object stream contents are discarded. In this way, the first
+time an object in an object stream is requested, all objects in the
+stream are cached.</p>
+<p>The following example should clarify how <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> processes a simple
+file.</p>
+<ul>
+<li><p>Client constructs <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> <code class="docutils literal notranslate"><span class="pre">pdf</span></code> and calls
+<code class="docutils literal notranslate"><span class="pre">pdf.processFile(&quot;a.pdf&quot;);</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> class checks the beginning of
+<code class="file docutils literal notranslate"><span class="pre">a.pdf</span></code> for a PDF header. It then reads the
+cross reference table mentioned at the end of the file, ensuring that
+it is looking before the last <code class="docutils literal notranslate"><span class="pre">%%EOF</span></code>. After getting to <code class="docutils literal notranslate"><span class="pre">trailer</span></code>
+keyword, it invokes the parser.</p></li>
+<li><p>The parser sees “<code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code>”, so it calls itself recursively in
+dictionary creation mode.</p></li>
+<li><p>In dictionary creation mode, the parser keeps accumulating objects
+until it encounters “<code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code>”. Each object that is read is pushed onto
+a stack. If “<code class="docutils literal notranslate"><span class="pre">R</span></code>” is read, the last two objects on the stack are
+inspected. If they are integers, they are popped off the stack and
+their values are used to construct an indirect object handle which is
+then pushed onto the stack. When “<code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code>” is finally read, the stack
+is converted into a <code class="docutils literal notranslate"><span class="pre">QPDF_Dictionary</span></code> which is placed in a
+<code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> and returned.</p></li>
+<li><p>The resulting dictionary is saved as the trailer dictionary.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">/Prev</span></code> key is searched. If present, <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> seeks to that
+point and repeats except that the new trailer dictionary is not
+saved. If <code class="docutils literal notranslate"><span class="pre">/Prev</span></code> is not present, the initial parsing process is
+complete.</p>
+<p>If there is an encryption dictionary, the document’s encryption
+parameters are initialized.</p>
+</li>
+<li><p>The client requests root object. The <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> class gets the value of
+root key from trailer dictionary and returns it. It is an unresolved
+indirect <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code>.</p></li>
+<li><p>The client requests the <code class="docutils literal notranslate"><span class="pre">/Pages</span></code> key from root
+<code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code>. The <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> notices that it is
+indirect so it asks <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> to resolve it. <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> looks in the
+object cache for an object with the root dictionary’s object ID and
+generation number. Upon not seeing it, it checks the cross reference
+table, gets the offset, and reads the object present at that offset.
+It stores the result in the object cache and returns the cached
+result. The calling <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> replaces its object pointer
+with the one from the resolved <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code>, verifies that it
+a valid dictionary object, and returns the (unresolved indirect)
+<code class="docutils literal notranslate"><span class="pre">QPDFObject</span></code> handle to the top of the Pages hierarchy.</p>
+<p>As the client continues to request objects, the same process is
+followed for each new requested object.</p>
+</li>
+</ul>
+</section>
+<section id="casting-policy">
+<span id="casting"></span><h2>Casting Policy<a class="headerlink" href="#casting-policy" title="Permalink to this headline"></a></h2>
+<p>This section describes the casting policy followed by qpdf’s
+implementation. This is no concern to qpdf’s end users and largely of no
+concern to people writing code that uses qpdf, but it could be of
+interest to people who are porting qpdf to a new platform or who are
+making modifications to the code.</p>
+<p>The C++ code in qpdf is free of old-style casts except where unavoidable
+(e.g. where the old-style cast is in a macro provided by a third-party
+header file). When there is a need for a cast, it is handled, in order
+of preference, by rewriting the code to avoid the need for a cast,
+calling <code class="docutils literal notranslate"><span class="pre">const_cast</span></code>, calling <code class="docutils literal notranslate"><span class="pre">static_cast</span></code>, calling
+<code class="docutils literal notranslate"><span class="pre">reinterpret_cast</span></code>, or calling some combination of the above. As a
+last resort, a compiler-specific <code class="docutils literal notranslate"><span class="pre">#pragma</span></code> may be used to suppress a
+warning that we don’t want to fix. Examples may include suppressing
+warnings about the use of old-style casts in code that is shared between
+C and C++ code.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">QIntC</span></code> namespace, provided by
+<code class="file docutils literal notranslate"><span class="pre">include/qpdf/QIntC.hh</span></code>, implements safe
+functions for converting between integer types. These functions do range
+checking and throw a <code class="docutils literal notranslate"><span class="pre">std::range_error</span></code>, which is subclass of
+<code class="docutils literal notranslate"><span class="pre">std::runtime_error</span></code>, if conversion from one integer type to another
+results in loss of information. There are many cases in which we have to
+move between different integer types because of incompatible integer
+types used in interoperable interfaces. Some are unavoidable, such as
+moving between sizes and offsets, and others are there because of old
+code that is too in entrenched to be fixable without breaking source
+compatibility and causing pain for users. QPDF is compiled with extra
+warnings to detect conversions with potential data loss, and all such
+cases should be fixed by either using a function from <code class="docutils literal notranslate"><span class="pre">QIntC</span></code> or a
+<code class="docutils literal notranslate"><span class="pre">static_cast</span></code>.</p>
+<p>When the intention is just to switch the type because of exchanging data
+between incompatible interfaces, use <code class="docutils literal notranslate"><span class="pre">QIntC</span></code>. This is the usual case.
+However, there are some cases in which we are explicitly intending to
+use the exact same bit pattern with a different type. This is most
+common when switching between signed and unsigned characters. A lot of
+qpdf’s code uses unsigned characters internally, but <code class="docutils literal notranslate"><span class="pre">std::string</span></code> and
+<code class="docutils literal notranslate"><span class="pre">char</span></code> are signed. Using <code class="docutils literal notranslate"><span class="pre">QIntC::to_char</span></code> would be wrong for
+converting from unsigned to signed characters because a negative
+<code class="docutils literal notranslate"><span class="pre">char</span></code> value and the corresponding <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char</span></code> value greater
+than 127 <em>mean the same thing</em>. There are also
+cases in which we use <code class="docutils literal notranslate"><span class="pre">static_cast</span></code> when working with bit fields where
+we are not representing a numerical value but rather a bunch of bits
+packed together in some integer type. Also note that <code class="docutils literal notranslate"><span class="pre">size_t</span></code> and
+<code class="docutils literal notranslate"><span class="pre">long</span></code> both typically differ between 32-bit and 64-bit environments,
+so sometimes an explicit cast may not be needed to avoid warnings on one
+platform but may be needed on another. A conversion with <code class="docutils literal notranslate"><span class="pre">QIntC</span></code>
+should always be used when the types are different even if the
+underlying size is the same. QPDF’s CI build builds on 32-bit and 64-bit
+platforms, and the test suite is very thorough, so it is hard to make
+any of the potential errors here without being caught in build or test.</p>
+<p>Non-const <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char*</span></code> is used in the <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code> interface. The
+pipeline interface has a <code class="docutils literal notranslate"><span class="pre">write</span></code> call that uses <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char*</span></code>
+without a <code class="docutils literal notranslate"><span class="pre">const</span></code> qualifier. The main reason for this is
+to support pipelines that make calls to third-party libraries, such as
+zlib, that don’t include <code class="docutils literal notranslate"><span class="pre">const</span></code> in their interfaces. Unfortunately,
+there are many places in the code where it is desirable to have
+<code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">char*</span></code> with pipelines. None of the pipeline implementations
+in qpdf
+currently modify the data passed to write, and doing so would be counter
+to the intent of <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code>, but there is nothing in the code to
+prevent this from being done. There are places in the code where
+<code class="docutils literal notranslate"><span class="pre">const_cast</span></code> is used to remove the const-ness of pointers going into
+<code class="docutils literal notranslate"><span class="pre">Pipeline</span></code>s. This could theoretically be unsafe, but there is
+adequate testing to assert that it is safe and will remain safe in
+qpdf’s code.</p>
+</section>
+<section id="encryption">
+<span id="id4"></span><h2>Encryption<a class="headerlink" href="#encryption" title="Permalink to this headline"></a></h2>
+<p>Encryption is supported transparently by qpdf. When opening a PDF file,
+if an encryption dictionary exists, the <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object processes this
+dictionary using the password (if any) provided. The primary decryption
+key is computed and cached. No further access is made to the encryption
+dictionary after that time. When an object is read from a file, the
+object ID and generation of the object in which it is contained is
+always known. Using this information along with the stored encryption
+key, all stream and string objects are transparently decrypted. Raw
+encrypted objects are never stored in memory. This way, nothing in the
+library ever has to know or care whether it is reading an encrypted
+file.</p>
+<p>An interface is also provided for writing encrypted streams and strings
+given an encryption key. This is used by <code class="docutils literal notranslate"><span class="pre">QPDFWriter</span></code> when it rewrites
+encrypted files.</p>
+<p>When copying encrypted files, unless otherwise directed, qpdf will
+preserve any encryption in force in the original file. qpdf can do this
+with either the user or the owner password. There is no difference in
+capability based on which password is used. When 40 or 128 bit
+encryption keys are used, the user password can be recovered with the
+owner password. With 256 keys, the user and owner passwords are used
+independently to encrypt the actual encryption key, so while either can
+be used, the owner password can no longer be used to recover the user
+password.</p>
+<p>Starting with version 4.0.0, qpdf can read files that are not encrypted
+but that contain encrypted attachments, but it cannot write such files.
+qpdf also requires the password to be specified in order to open the
+file, not just to extract attachments, since once the file is open, all
+decryption is handled transparently. When copying files like this while
+preserving encryption, qpdf will apply the file’s encryption to
+everything in the file, not just to the attachments. When decrypting the
+file, qpdf will decrypt the attachments. In general, when copying PDF
+files with multiple encryption formats, qpdf will choose the newest
+format. The only exception to this is that clear-text metadata will be
+preserved as clear-text if it is that way in the original file.</p>
+<p>One point of confusion some people have about encrypted PDF files is
+that encryption is not the same as password protection. Password
+protected files are always encrypted, but it is also possible to create
+encrypted files that do not have passwords. Internally, such files use
+the empty string as a password, and most readers try the empty string
+first to see if it works and prompt for a password only if the empty
+string doesn’t work. Normally such files have an empty user password and
+a non-empty owner password. In that way, if the file is opened by an
+ordinary reader without specification of password, the restrictions
+specified in the encryption dictionary can be enforced. Most users
+wouldn’t even realize such a file was encrypted. Since qpdf always
+ignores the restrictions (except for the purpose of reporting what they
+are), qpdf doesn’t care which password you use. QPDF will allow you to
+create PDF files with non-empty user passwords and empty owner
+passwords. Some readers will require a password when you open these
+files, and others will open the files without a password and not enforce
+restrictions. Having a non-empty user password and an empty owner
+password doesn’t really make sense because it would mean that opening
+the file with the user password would be more restrictive than not
+supplying a password at all. QPDF also allows you to create PDF files
+with the same password as both the user and owner password. Some readers
+will not ever allow such files to be accessed without restrictions
+because they never try the password as the owner password if it works as
+the user password. Nonetheless, one of the powerful aspects of qpdf is
+that it allows you to finely specify the way encrypted files are
+created, even if the results are not useful to some readers. One use
+case for this would be for testing a PDF reader to ensure that it
+handles odd configurations of input files.</p>
+</section>
+<section id="random-number-generation">
+<span id="random-numbers"></span><h2>Random Number Generation<a class="headerlink" href="#random-number-generation" title="Permalink to this headline"></a></h2>
+<p>QPDF generates random numbers to support generation of encrypted data.
+Starting in qpdf 10.0.0, qpdf uses the crypto provider as its source of
+random numbers. Older versions used the OS-provided source of secure
+random numbers or, if allowed at build time, insecure random numbers
+from stdlib. Starting with version 5.1.0, you can disable use of
+OS-provided secure random numbers at build time. This is especially
+useful on Windows if you want to avoid a dependency on Microsoft’s
+cryptography API. You can also supply your own random data provider. For
+details on how to do this, please refer to the top-level README.md file
+in the source distribution and to comments in
+<code class="file docutils literal notranslate"><span class="pre">QUtil.hh</span></code>.</p>
+</section>
+<section id="adding-and-removing-pages">
+<span id="adding-and-remove-pages"></span><h2>Adding and Removing Pages<a class="headerlink" href="#adding-and-removing-pages" title="Permalink to this headline"></a></h2>
+<p>While qpdf’s API has supported adding and modifying objects for some
+time, version 3.0 introduces specific methods for adding and removing
+pages. These are largely convenience routines that handle two tricky
+issues: pushing inheritable resources from the <code class="docutils literal notranslate"><span class="pre">/Pages</span></code> tree down to
+individual pages and manipulation of the <code class="docutils literal notranslate"><span class="pre">/Pages</span></code> tree itself. For
+details, see <code class="docutils literal notranslate"><span class="pre">addPage</span></code> and surrounding methods in
+<code class="file docutils literal notranslate"><span class="pre">QPDF.hh</span></code>.</p>
+</section>
+<section id="reserving-object-numbers">
+<span id="reserved-objects"></span><h2>Reserving Object Numbers<a class="headerlink" href="#reserving-object-numbers" title="Permalink to this headline"></a></h2>
+<p>Version 3.0 of qpdf introduced the concept of reserved objects. These
+are seldom needed for ordinary operations, but there are cases in which
+you may want to add a series of indirect objects with references to each
+other to a <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object. This causes a problem because you can’t
+determine the object ID that a new indirect object will have until you
+add it to the <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object with <code class="docutils literal notranslate"><span class="pre">QPDF::makeIndirectObject</span></code>. The
+only way to add two mutually referential objects to a <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object
+prior to version 3.0 would be to add the new objects first and then make
+them refer to each other after adding them. Now it is possible to create
+a <em>reserved object</em> using
+<code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle::newReserved</span></code>. This is an indirect object that stays
+“unresolved” even if it is queried for its type. So now, if you want to
+create a set of mutually referential objects, you can create
+reservations for each one of them and use those reservations to
+construct the references. When finished, you can call
+<code class="docutils literal notranslate"><span class="pre">QPDF::replaceReserved</span></code> to replace the reserved objects with the real
+ones. This functionality will never be needed by most applications, but
+it is used internally by QPDF when copying objects from other PDF files,
+as discussed in <a class="reference internal" href="#foreign-objects"><span class="std std-ref">Copying Objects From Other PDF Files</span></a>. For an example of how to use reserved
+objects, search for <code class="docutils literal notranslate"><span class="pre">newReserved</span></code> in
+<code class="file docutils literal notranslate"><span class="pre">test_driver.cc</span></code> in qpdf’s sources.</p>
+</section>
+<section id="copying-objects-from-other-pdf-files">
+<span id="foreign-objects"></span><h2>Copying Objects From Other PDF Files<a class="headerlink" href="#copying-objects-from-other-pdf-files" title="Permalink to this headline"></a></h2>
+<p>Version 3.0 of qpdf introduced the ability to copy objects into a
+<code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object from a different <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object, which we refer to as
+<em>foreign objects</em>. This allows arbitrary
+merging of PDF files. The “from” <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object must remain valid after
+the copy as discussed in the note below. The
+<strong class="command">qpdf</strong> command-line tool provides limited
+support for basic page selection, including merging in pages from other
+files, but the library’s API makes it possible to implement arbitrarily
+complex merging operations. The main method for copying foreign objects
+is <code class="docutils literal notranslate"><span class="pre">QPDF::copyForeignObject</span></code>. This takes an indirect object from
+another <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> and copies it recursively into this object while
+preserving all object structure, including circular references. This
+means you can add a direct object that you create from scratch to a
+<code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object with <code class="docutils literal notranslate"><span class="pre">QPDF::makeIndirectObject</span></code>, and you can add an
+indirect object from another file with <code class="docutils literal notranslate"><span class="pre">QPDF::copyForeignObject</span></code>. The
+fact that <code class="docutils literal notranslate"><span class="pre">QPDF::makeIndirectObject</span></code> does not automatically detect a
+foreign object and copy it is an explicit design decision. Copying a
+foreign object seems like a sufficiently significant thing to do that it
+should be done explicitly.</p>
+<p>The other way to copy foreign objects is by passing a page from one
+<code class="docutils literal notranslate"><span class="pre">QPDF</span></code> to another by calling <code class="docutils literal notranslate"><span class="pre">QPDF::addPage</span></code>. In contrast to
+<code class="docutils literal notranslate"><span class="pre">QPDF::makeIndirectObject</span></code>, this method automatically distinguishes
+between indirect objects in the current file, foreign objects, and
+direct objects.</p>
+<p>Please note: when you copy objects from one <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> to another, the
+source <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object must remain valid until you have finished with
+the destination object. This is because the original object is still
+used to retrieve any referenced stream data from the copied object.</p>
+</section>
+<section id="writing-pdf-files">
+<span id="rewriting"></span><h2>Writing PDF Files<a class="headerlink" href="#writing-pdf-files" title="Permalink to this headline"></a></h2>
+<p>The qpdf library supports file writing of <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> objects to PDF files
+through the <code class="docutils literal notranslate"><span class="pre">QPDFWriter</span></code> class. The <code class="docutils literal notranslate"><span class="pre">QPDFWriter</span></code> class has two
+writing modes: one for non-linearized files, and one for linearized
+files. See <a class="reference internal" href="linearization.html#linearization"><span class="std std-ref">Linearization</span></a> for a description of
+linearization is implemented. This section describes how we write
+non-linearized files including the creation of QDF files (see <a class="reference internal" href="qdf.html#qdf"><span class="std std-ref">QDF Mode</span></a>.</p>
+<p>This outline was written prior to implementation and is not exactly
+accurate, but it provides a correct “notional” idea of how writing
+works. Look at the code in <code class="docutils literal notranslate"><span class="pre">QPDFWriter</span></code> for exact details.</p>
+<ul>
+<li><p>Initialize state:</p>
+<ul class="simple">
+<li><p>next object number = 1</p></li>
+<li><p>object queue = empty</p></li>
+<li><p>renumber table: old object id/generation to new id/0 = empty</p></li>
+<li><p>xref table: new id -&gt; offset = empty</p></li>
+</ul>
+</li>
+<li><p>Create a QPDF object from a file.</p></li>
+<li><p>Write header for new PDF file.</p></li>
+<li><p>Request the trailer dictionary.</p></li>
+<li><p>For each value that is an indirect object, grab the next object
+number (via an operation that returns and increments the number). Map
+object to new number in renumber table. Push object onto queue.</p></li>
+<li><p>While there are more objects on the queue:</p>
+<ul>
+<li><p>Pop queue.</p></li>
+<li><p>Look up object’s new number <em>n</em> in the renumbering table.</p></li>
+<li><p>Store current offset into xref table.</p></li>
+<li><p>Write <code class="docutils literal notranslate"><span class="pre">:samp:`{n}`</span> <span class="pre">0</span> <span class="pre">obj</span></code>.</p></li>
+<li><p>If object is null, whether direct or indirect, write out null,
+thus eliminating unresolvable indirect object references.</p></li>
+<li><p>If the object is a stream stream, write stream contents, piped
+through any filters as required, to a memory buffer. Use this
+buffer to determine the stream length.</p></li>
+<li><p>If object is not a stream, array, or dictionary, write out its
+contents.</p></li>
+<li><p>If object is an array or dictionary (including stream), traverse
+its elements (for array) or values (for dictionaries), handling
+recursive dictionaries and arrays, looking for indirect objects.
+When an indirect object is found, if it is not resolvable, ignore.
+(This case is handled when writing it out.) Otherwise, look it up
+in the renumbering table. If not found, grab the next available
+object number, assign to the referenced object in the renumbering
+table, and push the referenced object onto the queue. As a special
+case, when writing out a stream dictionary, replace length,
+filters, and decode parameters as required.</p>
+<p>Write out dictionary or array, replacing any unresolvable indirect
+object references with null (pdf spec says reference to
+non-existent object is legal and resolves to null) and any
+resolvable ones with references to the renumbered objects.</p>
+</li>
+<li><p>If the object is a stream, write <code class="docutils literal notranslate"><span class="pre">stream\n</span></code>, the stream contents
+(from the memory buffer), and <code class="docutils literal notranslate"><span class="pre">\nendstream\n</span></code>.</p></li>
+<li><p>When done, write <code class="docutils literal notranslate"><span class="pre">endobj</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+<p>Once we have finished the queue, all referenced objects will have been
+written out and all deleted objects or unreferenced objects will have
+been skipped. The new cross-reference table will contain an offset for
+every new object number from 1 up to the number of objects written. This
+can be used to write out a new xref table. Finally we can write out the
+trailer dictionary with appropriately computed /ID (see spec, 8.3, File
+Identifiers), the cross reference table offset, and <code class="docutils literal notranslate"><span class="pre">%%EOF</span></code>.</p>
+</section>
+<section id="filtered-streams">
+<span id="id5"></span><h2>Filtered Streams<a class="headerlink" href="#filtered-streams" title="Permalink to this headline"></a></h2>
+<p>Support for streams is implemented through the <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code> interface
+which was designed for this package.</p>
+<p>When reading streams, create a series of <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code> objects. The
+<code class="docutils literal notranslate"><span class="pre">Pipeline</span></code> abstract base requires implementation <code class="docutils literal notranslate"><span class="pre">write()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">finish()</span></code> and provides an implementation of <code class="docutils literal notranslate"><span class="pre">getNext()</span></code>. Each
+pipeline object, upon receiving data, does whatever it is going to do
+and then writes the data (possibly modified) to its successor.
+Alternatively, a pipeline may be an end-of-the-line pipeline that does
+something like store its output to a file or a memory buffer ignoring a
+successor. For additional details, look at
+<code class="file docutils literal notranslate"><span class="pre">Pipeline.hh</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">QPDF</span></code> can read raw or filtered streams. When reading a filtered
+stream, the <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> class creates a <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code> object for one of each
+appropriate filter object and chains them together. The last filter
+should write to whatever type of output is required. The <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> class
+has an interface to write raw or filtered stream contents to a given
+pipeline.</p>
+</section>
+<section id="object-accessor-methods">
+<span id="object-accessors"></span><h2>Object Accessor Methods<a class="headerlink" href="#object-accessor-methods" title="Permalink to this headline"></a></h2>
+<p>For general information about how to access instances of
+<code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code>, please see the comments in
+<code class="file docutils literal notranslate"><span class="pre">QPDFObjectHandle.hh</span></code>. Search for “Accessor
+methods”. This section provides a more in-depth discussion of the
+behavior and the rationale for the behavior.</p>
+<p><em>Why were type errors made into warnings?</em> When type checks were
+introduced into qpdf in the early days, it was expected that type errors
+would only occur as a result of programmer error. However, in practice,
+type errors would occur with malformed PDF files because of assumptions
+made in code, including code within the qpdf library and code written by
+library users. The most common case would be chaining calls to
+<code class="docutils literal notranslate"><span class="pre">getKey()</span></code> to access keys deep within a dictionary. In many cases,
+qpdf would be able to recover from these situations, but the old
+behavior often resulted in crashes rather than graceful recovery. For
+this reason, the errors were changed to warnings.</p>
+<p><em>Why even warn about type errors when the user can’t usually do anything
+about them?</em> Type warnings are extremely valuable during development.
+Since it’s impossible to catch at compile time things like typos in
+dictionary key names or logic errors around what the structure of a PDF
+file might be, the presence of type warnings can save lots of developer
+time. They have also proven useful in exposing issues in qpdf itself
+that would have otherwise gone undetected.</p>
+<p><em>Can there be a type-safe ``QPDFObjectHandle``?</em> It would be great if
+<code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> could be more strongly typed so that you’d have to
+have check that something was of a particular type before calling
+type-specific accessor methods. However, implementing this at this stage
+of the library’s history would be quite difficult, and it would make a
+the common pattern of drilling into an object no longer work. While it
+would be possible to have a parallel interface, it would create a lot of
+extra code. If qpdf were written in a language like rust, an interface
+like this would make a lot of sense, but, for a variety of reasons, the
+qpdf API is consistent with other APIs of its time, relying on exception
+handling to catch errors. The underlying PDF objects are inherently not
+type-safe. Forcing stronger type safety in <code class="docutils literal notranslate"><span class="pre">QPDFObjectHandle</span></code> would
+ultimately cause a lot more code to have to be written and would like
+make software that uses qpdf more brittle, and even so, checks would
+have to occur at runtime.</p>
+<p><em>Why do type errors sometimes raise exceptions?</em> The way warnings work
+in qpdf requires a <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object to be associated with an object
+handle for a warning to be issued. It would be nice if this could be
+fixed, but it would require major changes to the API. Rather than
+throwing away these conditions, we convert them to exceptions. It’s not
+that bad though. Since any object handle that was read from a file has
+an associated <code class="docutils literal notranslate"><span class="pre">QPDF</span></code> object, it would only be type errors on objects
+that were created explicitly that would cause exceptions, and in that
+case, type errors are much more likely to be the result of a coding
+error than invalid input.</p>
+<p><em>Why does the behavior of a type exception differ between the C and C++
+API?</em> There is no way to throw and catch exceptions in C short of
+something like <code class="docutils literal notranslate"><span class="pre">setjmp</span></code> and <code class="docutils literal notranslate"><span class="pre">longjmp</span></code>, and that approach is not
+portable across language barriers. Since the C API is often used from
+other languages, it’s important to keep things as simple as possible.
+Starting in qpdf 10.5, exceptions that used to crash code using the C
+API will be written to stderr by default, and it is possible to register
+an error handler. There’s no reason that the error handler can’t
+simulate exception handling in some way, such as by using <code class="docutils literal notranslate"><span class="pre">setjmp</span></code> and
+<code class="docutils literal notranslate"><span class="pre">longjmp</span></code> or by setting some variable that can be checked after
+library calls are made. In retrospect, it might have been better if the
+C API object handle methods returned error codes like the other methods
+and set return values in passed-in pointers, but this would complicate
+both the implementation and the use of the library for a case that is
+actually quite rare and largely avoidable.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="json.html" class="btn btn-neutral float-left" title="QPDF JSON" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="linearization.html" class="btn btn-neutral float-right" title="Linearization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2005-2021, Jay Berkenbilt.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
