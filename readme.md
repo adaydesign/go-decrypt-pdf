@@ -3,14 +3,15 @@
 ## PDFCPU VS QPDF
 
 - example file size : 179kb
+- example file pdf version : 1.6
 - test with operation system : Windows 10
 
 ### Time Excution
-|lib|excution|time(ms)|
-|---|---|---|
-|PdfCpu|pkg|14.9964|
-|PdfCpu|cli|71.3979|
-|QPdf|cli|434.3817|
+|lib|excution|time(ms)|output pdf version|
+|---|---|---|---|
+|PdfCpu|pkg|14.9964|1.7|
+|PdfCpu|cli|71.3979|1.7|
+|QPdf|cli|434.3817|1.6|
 
 ### Limitation
 - PdfCpu support all versions of PDF up to version 1.7
