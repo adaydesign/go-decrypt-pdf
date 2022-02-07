@@ -1,4 +1,4 @@
-module go-decrypt-pdf
+module github.com/adaydesign/go-decrypt-pdf
 
 go 1.17
 

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"go-decrypt-pdf/lib"
+	"github.com/adaydesign/go-decrypt-pdf/lib"
 )
 
 func main() {
