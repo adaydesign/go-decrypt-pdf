@@ -28,7 +28,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	pdfcpu := path + "/lib/pdfcpu_0.3.13/pdfcpu.exe"
+	pdfcpu := path + "/bin/pdfcpu_0.3.13/pdfcpu.exe"
 
 	start = time.Now()
 	result, _ = lib.PdfCpuDecryptPasswordByCLI(pdfcpu, input, password, output1)
@@ -37,7 +37,7 @@ func main() {
 	fmt.Println("PDFCPU took ", elapse)
 
 	// 3. use qpdf (run excute file)
-	qpdf := path + "/lib/qpdf-10.5.0/bin/qpdf.exe"
+	qpdf := path + "/bin/qpdf-10.5.0/bin/qpdf.exe"
 
 	start = time.Now()
 	result, _ = lib.QPdfDecryptPasswordByCLI(qpdf, input, password, output2)

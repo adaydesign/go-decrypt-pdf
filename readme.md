@@ -28,7 +28,7 @@ input := "files/locked_doc.pdf"
 password := "@1234"
 output := "files/out_pdfcpu_pkg.pdf"
 
-result, _ := decrypt.PdfCpuDecryptPassword(input, password, output)
+result, _ := lib.PdfCpuDecryptPassword(input, password, output)
 fmt.Println(result)
 ```
 
@@ -42,9 +42,9 @@ path, err := os.Getwd()
 if err != nil {
     fmt.Println(err)
 }
-pdfcpu := path + "/lib/pdfcpu_0.3.13/pdfcpu.exe"
+pdfcpu := path + "/bin/pdfcpu_0.3.13/pdfcpu.exe"
 
-result, _ = decrypt.PdfCpuDecryptPasswordByCLI(pdfcpu, input, password, output1)
+result, _ = lib.PdfCpuDecryptPasswordByCLI(pdfcpu, input, password, output1)
 fmt.Println(result)
 ```
 
@@ -58,9 +58,9 @@ path, err := os.Getwd()
 if err != nil {
     fmt.Println(err)
 }
-qpdf := path + "/lib/qpdf-10.5.0/bin/qpdf.exe"
+qpdf := path + "/bin/qpdf-10.5.0/bin/qpdf.exe"
 
-result, _ = decrypt.QPdfDecryptPasswordByCLI(qpdf, input, password, output2)
+result, _ = lib.QPdfDecryptPasswordByCLI(qpdf, input, password, output2)
 fmt.Println(result)
 ```
 
